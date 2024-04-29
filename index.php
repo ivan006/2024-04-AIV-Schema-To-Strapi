@@ -57,14 +57,21 @@ function createStrapiFiles($table, $schema) {
 
     file_put_contents($baseDir . "content-types/$table/schema.json", json_encode($schemaFile, JSON_PRETTY_PRINT));
 
-    // Controller, Router, and Service files
-    $jsContent = "const { createCore{$entity} } = require('@strapi/strapi').factories;\n\n";
-    $jsContent .= "module.exports = createCore{$entity}('api::$table.$table');\n";
+    // Create JavaScript files
+    $controllerContent = "const { createCoreController } = require('@strapi/strapi').factories;\n\n";
+    $controllerContent .= "module.exports = createCoreController('api::$table.$table');\n";
 
-    file_put_contents($baseDir . "controllers/$table.js", str_replace('{$entity}', 'Controller', $jsContent));
-    file_put_contents($baseDir . "routes/$table.js", str_replace('{$entity}', 'Router', $jsContent));
-    file_put_contents($baseDir . "services/$table.js", str_replace('{$entity}', 'Service', $jsContent));
+    $routerContent = "const { createCoreRouter } = require('@strapi/strapi').factories;\n\n";
+    $routerContent .= "module.exports = createCoreRouter('api::$table.$table');\n";
+
+    $serviceContent = "const { createCoreService } = require('@strapi/strapi').factories;\n\n";
+    $serviceContent .= "module.exports = createCoreService('api::$table.$table');\n";
+
+    file_put_contents($baseDir . "controllers/$table.js", $controllerContent);
+    file_put_contents($baseDir . "routes/$table.js", $routerContent);
+    file_put_contents($baseDir . "services/$table.js", $serviceContent);
 }
+
 
 function mapColumnType($dbType) {
     if (stripos($dbType, 'int') !== false) return 'integer';
